@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -11,12 +10,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/vivek-344/diagon/sigil/config"
 	"github.com/vivek-344/diagon/sigil/internal/handler"
+	"github.com/vivek-344/diagon/sigil/internal/middleware"
 	"github.com/vivek-344/diagon/sigil/internal/repository"
 	"github.com/vivek-344/diagon/sigil/internal/service"
 )
@@ -54,12 +52,14 @@ func run(cfg *config.Config) error {
 	defer dbPool.Close()
 
 	// Initialize Repositories, Services, and Handlers
+	authMiddleware := middleware.AuthMiddleware(cfg.JWTSecret)
 	developerRepo := repository.NewDeveloperRepository(dbPool)
 	developerSvc := service.NewDeveloperService(developerRepo)
+	authHandler := handler.NewAuthHandler(developerSvc, cfg.JWTSecret)
 	developerHandler := handler.NewDeveloperHandler(developerSvc)
 
 	// HTTP Router
-	router := setupRouter(developerHandler, dbPool)
+	router := setupRouter(authMiddleware, authHandler, developerHandler, dbPool)
 
 	// HTTP Server
 	server := &http.Server{
@@ -97,42 +97,6 @@ func initDB(ctx context.Context, databaseURL string) (*pgxpool.Pool, error) {
 
 	slog.Info("database connected successfully")
 	return pool, nil
-}
-
-func setupRouter(developerHandler *handler.DeveloperHandler, dbPool *pgxpool.Pool) *chi.Mux {
-	r := chi.NewRouter()
-
-	// Middleware
-	r.Use(middleware.RequestID)
-	r.Use(middleware.RealIP)
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
-	r.Use(middleware.Timeout(30 * time.Second))
-
-	// Health check
-	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		// Check database connectivity
-		if err := dbPool.Ping(r.Context()); err != nil {
-			w.WriteHeader(http.StatusServiceUnavailable)
-			json.NewEncoder(w).Encode(map[string]string{
-				"status": "unhealthy",
-				"db":     "disconnected",
-			})
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
-	})
-
-	// API routes
-	r.Route("/", func(r chi.Router) {
-		r.Route("developers", func(r chi.Router) {
-			r.Post("/", developerHandler.Create)
-		})
-	})
-
-	return r
 }
 
 func startServerWithGracefulShutdown(ctx context.Context, server *http.Server) error {

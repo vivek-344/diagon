@@ -31,9 +31,7 @@ func (r *developerRepo) Create(ctx context.Context, input *domain.CreateDevelope
 		)
 		VALUES ($1, $2, $3, $4)
 		RETURNING
-			id, email, password_hash, full_name, company_name, status,
-			email_verified, plan_tier, created_at, updated_at, metadata
-	`
+			id, email`
 
 	var (
 		dev      domain.Developer
@@ -43,8 +41,7 @@ func (r *developerRepo) Create(ctx context.Context, input *domain.CreateDevelope
 	err := r.db.QueryRow(
 		ctx, query, input.Email, passwordHash, input.FullName, input.CompanyName,
 	).Scan(
-		&dev.ID, &dev.Email, &dev.PasswordHash, &dev.FullName, &dev.CompanyName, &dev.Status,
-		&dev.EmailVerified, &dev.PlanTier, &dev.CreatedAt, &dev.UpdatedAt, &metadata,
+		&dev.ID, &dev.Email,
 	)
 
 	if err != nil {

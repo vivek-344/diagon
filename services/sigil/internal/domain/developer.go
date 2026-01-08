@@ -9,12 +9,15 @@ import (
 )
 
 type Status string
+type contextKey string
 
 const (
-	StatusPending   Status = "pending"
-	StatusActive    Status = "active"
-	StatusSuspended Status = "suspended"
-	StatusDeleted   Status = "deleted"
+	StatusPending   Status     = "pending"
+	StatusActive    Status     = "active"
+	StatusSuspended Status     = "suspended"
+	StatusDeleted   Status     = "deleted"
+	DeveloperIDKey  contextKey = "developer_id"
+	EmailKey        contextKey = "email"
 )
 
 var (

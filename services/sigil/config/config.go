@@ -11,6 +11,7 @@ import (
 type Config struct {
 	Port        string
 	DatabaseURL string
+	JWTSecret   string
 }
 
 func Load() (*Config, error) {
@@ -25,11 +26,16 @@ func Load() (*Config, error) {
 	cfg := &Config{
 		DatabaseURL: viper.GetString("DATABASE_URL"),
 		Port:        viper.GetString("PORT"),
+		JWTSecret:   viper.GetString("JWT_SECRET"),
 	}
 
 	// Default port if not set
 	if cfg.Port == "" {
 		cfg.Port = "8080"
+	}
+
+	if cfg.JWTSecret == "" {
+		return nil, errors.New("JWT_SECRET is required")
 	}
 
 	if err := cfg.validate(); err != nil {
