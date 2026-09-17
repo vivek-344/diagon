@@ -16,10 +16,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	logger.Info(
-		"starting auth service",
+	logger = logger.With(
 		"service", cfg.App.Name,
+		"version", cfg.App.Version,
 		"env", cfg.App.Env,
-		"port", cfg.App.GRPCPort,
 	)
+
+	a := app.New(cfg, logger)
+
+	a.Run()
 }
