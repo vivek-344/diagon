@@ -5,8 +5,10 @@ import "time"
 type SSLMode string
 
 const (
-	SSLDisable SSLMode = "disable"
-	SSLRequire SSLMode = "require"
+	SSLDisable    SSLMode = "disable"
+	SSLRequire    SSLMode = "require"
+	SSLVerifyCA   SSLMode = "verify-ca"
+	SSLVerifyFull SSLMode = "verify-full"
 )
 
 type Environment string
@@ -42,7 +44,7 @@ type DBConfig struct {
 }
 
 type JWTConfig struct {
-	SigningKey      []byte        `mapstructure:"JWT_SECRET"`
+	SigningKey      string        `mapstructure:"JWT_SECRET"`
 	AccessDuration  time.Duration `mapstructure:"JWT_ACCESS_DURATION"`
 	RefreshDuration time.Duration `mapstructure:"JWT_REFRESH_DURATION"`
 }

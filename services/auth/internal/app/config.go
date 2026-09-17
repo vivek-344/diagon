@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -22,35 +23,73 @@ func LoadConfig() (*config.Config, error) {
 	}
 
 	v.SetConfigFile(configFile)
+	v.SetConfigType("env")
 
 	if err := v.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+		var notFoundErr viper.ConfigFileNotFoundError
+		if !errors.As(err, &notFoundErr) {
 			return nil, fmt.Errorf("bootstrap: read config: %w", err)
 		}
 	}
 
-	v.AutomaticEnv()
+	setDefaults(v)
 
-	// Defaults
+	if err := bindEnv(v); err != nil {
+		return nil, err
+	}
+
+	var cfg config.Config
+
+	if err := v.Unmarshal(&cfg); err != nil {
+		return nil, fmt.Errorf("bootstrap: unmarshal config: %w", err)
+	}
+
+	if err := cfg.Validate(); err != nil {
+		return nil, fmt.Errorf("bootstrap: validate config: %w", err)
+	}
+
+	return &cfg, nil
+}
+
+func setDefaults(v *viper.Viper) {
 	v.SetDefault("APP_ENV", config.EnvDevelopment)
 	v.SetDefault("APP_VERSION", "dev")
 	v.SetDefault("GRPC_PORT", DefaultGRPCPort)
+	v.SetDefault("SHUTDOWN_TIMEOUT", "10s")
 
 	v.SetDefault("DB_PORT", DefaultDBPort)
 	v.SetDefault("DB_SSLMODE", config.SSLDisable)
 
 	v.SetDefault("JWT_ACCESS_DURATION", "15m")
 	v.SetDefault("JWT_REFRESH_DURATION", "168h")
+}
 
-	var cfg config.Config
+func bindEnv(v *viper.Viper) error {
+	keys := []string{
+		"APP_NAME",
+		"APP_ENV",
+		"APP_VERSION",
+		"GRPC_PORT",
+		"SHUTDOWN_TIMEOUT",
 
-	if err := v.Unmarshal(&cfg); err != nil {
-		return nil, fmt.Errorf("bootstrap: failed to unmarshal config: %w", err)
+		"DB_HOST",
+		"DB_PORT",
+		"DB_USER",
+		"DB_PASSWORD",
+		"DB_NAME",
+		"DB_SEARCH_PATH",
+		"DB_SSLMODE",
+
+		"JWT_SECRET",
+		"JWT_ACCESS_DURATION",
+		"JWT_REFRESH_DURATION",
 	}
 
-	if err := cfg.Validate(); err != nil {
-		return nil, err
+	for _, key := range keys {
+		if err := v.BindEnv(key); err != nil {
+			return fmt.Errorf("bootstrap: bind env %s: %w", key, err)
+		}
 	}
 
-	return &cfg, nil
+	return nil
 }

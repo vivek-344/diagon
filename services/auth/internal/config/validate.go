@@ -27,21 +27,19 @@ func (a AppConfig) validate() error {
 	}
 
 	for key, value := range required {
-		if strings.TrimSpace(value) == "" {
-			v.Add(fmt.Errorf("config: %s is required", key))
-		}
+		require(&v, key, value)
 	}
 
 	if !a.Env.Valid() {
 		v.Add(fmt.Errorf("config: invalid APP_ENV: %q", a.Env))
 	}
 
-	if validatePort(a.GRPCPort) != nil {
-		v.Add(fmt.Errorf("config: invalid GRPC_PORT"))
+	if !isPortValid(a.GRPCPort) {
+		v.Add(fmt.Errorf("config: invalid GRPC_PORT: %v", a.GRPCPort))
 	}
 
 	if a.ShutdownTimeout <= 0 {
-		v.Add(fmt.Errorf("config: invalid SHUTDOWN_TIMEOUT"))
+		v.Add(fmt.Errorf("config: invalid SHUTDOWN_TIMEOUT: %v", a.ShutdownTimeout))
 	}
 
 	return v.Err()
@@ -59,13 +57,11 @@ func (d DBConfig) validate() error {
 	}
 
 	for key, value := range required {
-		if strings.TrimSpace(value) == "" {
-			v.Add(fmt.Errorf("config: missing required environment variable: %s", key))
-		}
+		require(&v, key, value)
 	}
 
-	if validatePort(d.Port) != nil {
-		v.Add(fmt.Errorf("config: invalid DB_PORT"))
+	if !isPortValid(d.Port) {
+		v.Add(fmt.Errorf("config: invalid DB_PORT: %v", d.Port))
 	}
 
 	if !d.SSLMode.Valid() {
@@ -80,18 +76,16 @@ func (j JWTConfig) validate() error {
 
 	if len(j.SigningKey) == 0 {
 		v.Add(fmt.Errorf("config: missing required environment variable: JWT_SECRET"))
-	}
-
-	if len(j.SigningKey) < 32 {
-		v.Add(fmt.Errorf("config: JWT_SECRET must be at least 32 characters long"))
+	} else if len(j.SigningKey) < 32 {
+		v.Add(fmt.Errorf("config: invalid JWT_SECRET: must be at least 32 characters long"))
 	}
 
 	if j.AccessDuration <= 0 {
-		v.Add(fmt.Errorf("config: invalid JWT_ACCESS_DURATION"))
+		v.Add(fmt.Errorf("config: invalid JWT_ACCESS_DURATION: %v", j.AccessDuration))
 	}
 
 	if j.RefreshDuration <= 0 {
-		v.Add(fmt.Errorf("config: invalid JWT_REFRESH_DURATION"))
+		v.Add(fmt.Errorf("config: invalid JWT_REFRESH_DURATION: %v", j.RefreshDuration))
 	}
 
 	if j.RefreshDuration <= j.AccessDuration {
@@ -111,11 +105,11 @@ func (v *Validator) Err() error {
 	return errors.Join(v.errs...)
 }
 
-func validatePort(port int) error {
+func isPortValid(port int) bool {
 	if port < 1 || port > 65535 {
-		return fmt.Errorf("config: invalid port: %d", port)
+		return false
 	}
-	return nil
+	return true
 }
 
 func (e Environment) Valid() bool {
@@ -129,9 +123,15 @@ func (e Environment) Valid() bool {
 
 func (s SSLMode) Valid() bool {
 	switch s {
-	case SSLDisable, SSLRequire:
+	case SSLDisable, SSLRequire, SSLVerifyCA, SSLVerifyFull:
 		return true
 	default:
 		return false
+	}
+}
+
+func require(v *Validator, name, value string) {
+	if strings.TrimSpace(value) == "" {
+		v.Add(fmt.Errorf("config: %s is required", name))
 	}
 }
