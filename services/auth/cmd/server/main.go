@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/vivek-344/diagon/services/auth/internal/app"
+	"github.com/vivek-344/diagon/services/auth/internal/database"
 )
 
 func main() {
@@ -22,7 +23,14 @@ func main() {
 		"env", cfg.App.Env,
 	)
 
-	a := app.New(cfg, logger)
+	db, err := database.NewPostgres(cfg.DB)
+	if err != nil {
+		logger.Error("failed to connect to database", "error", err)
+		os.Exit(1)
+	}
+	defer db.Close()
+
+	a := app.New(cfg, logger, db)
 
 	a.Run()
 }
