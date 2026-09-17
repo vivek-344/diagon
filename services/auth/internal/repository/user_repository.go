@@ -6,10 +6,14 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/vivek-344/diagon/services/auth/internal/domain"
 )
 
-var ErrUserNotFound = errors.New("user not found")
+var (
+	ErrUserNotFound      = errors.New("user not found")
+	ErrUserAlreadyExists = errors.New("user already exists")
+)
 
 type UserRepository struct {
 	db *sql.DB
@@ -55,6 +59,14 @@ func (r *UserRepository) Create(
 		&user.UpdatedAt,
 	)
 	if err != nil {
+		var pgErr *pgconn.PgError
+
+		if errors.As(err, &pgErr) &&
+			pgErr.Code == "23505" &&
+			pgErr.ConstraintName == "users_email_unique" {
+			return nil, ErrUserAlreadyExists
+		}
+
 		return nil, fmt.Errorf("repository: create user: %w", err)
 	}
 
