@@ -67,3 +67,15 @@ func (c *AuthClient) Login(
 		},
 	)
 }
+
+func (c *AuthClient) Refresh(
+	ctx context.Context,
+	refreshToken string,
+) (*authv1.RefreshResponse, error) {
+	return c.client.Refresh(
+		ctx,
+		&authv1.RefreshRequest{
+			RefreshToken: refreshToken,
+		},
+	)
+}

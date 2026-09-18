@@ -57,6 +57,15 @@ type tokenResponse struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
+type refreshRequest struct {
+	RefreshToken string `json:"refresh_token"`
+}
+
+type refreshResponse struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}
+
 func (h *AuthHandler) Register(
 	w http.ResponseWriter,
 	r *http.Request,
@@ -249,6 +258,106 @@ func (h *AuthHandler) Login(
 			AccessToken:  tokens.GetAccessToken(),
 			RefreshToken: tokens.GetRefreshToken(),
 		},
+	}
+
+	apiresponse.Write(
+		w,
+		http.StatusOK,
+		result,
+	)
+}
+
+func (h *AuthHandler) Refresh(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	r.Body = http.MaxBytesReader(
+		w,
+		r.Body,
+		maxRequestBodySize,
+	)
+
+	decoder := json.NewDecoder(r.Body)
+
+	var req refreshRequest
+
+	if err := decoder.Decode(&req); err != nil {
+		apiresponse.WriteError(
+			w,
+			http.StatusBadRequest,
+			apiresponse.CodeInvalidRequest,
+			"The request body is invalid.",
+			nil,
+		)
+		return
+	}
+
+	if err := decoder.Decode(&struct{}{}); err != io.EOF {
+		apiresponse.WriteError(
+			w,
+			http.StatusBadRequest,
+			apiresponse.CodeInvalidRequest,
+			"The request body is invalid.",
+			nil,
+		)
+		return
+	}
+
+	if req.RefreshToken == "" {
+		apiresponse.WriteError(
+			w,
+			http.StatusBadRequest,
+			apiresponse.CodeInvalidRequest,
+			"The request contains invalid fields.",
+			nil,
+		)
+		return
+	}
+
+	response, err := h.authClient.Refresh(
+		r.Context(),
+		req.RefreshToken,
+	)
+	if err != nil {
+		switch status.Code(err) {
+		case codes.Unauthenticated:
+			apiresponse.WriteError(
+				w,
+				http.StatusUnauthorized,
+				apiresponse.CodeInvalidRefreshToken,
+				"The refresh token is invalid or expired.",
+				nil,
+			)
+
+		default:
+			apiresponse.WriteError(
+				w,
+				http.StatusInternalServerError,
+				apiresponse.CodeInternalError,
+				"An unexpected error occurred.",
+				nil,
+			)
+		}
+
+		return
+	}
+
+	tokens := response.GetTokens()
+
+	if tokens == nil {
+		apiresponse.WriteError(
+			w,
+			http.StatusInternalServerError,
+			apiresponse.CodeInternalError,
+			"An unexpected error occurred.",
+			nil,
+		)
+		return
+	}
+
+	result := refreshResponse{
+		AccessToken:  tokens.GetAccessToken(),
+		RefreshToken: tokens.GetRefreshToken(),
 	}
 
 	apiresponse.Write(

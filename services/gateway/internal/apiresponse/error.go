@@ -16,10 +16,11 @@ type APIError struct {
 }
 
 const (
-	CodeInvalidRequest     = "INVALID_REQUEST"
-	CodeEmailAlreadyExists = "EMAIL_ALREADY_EXISTS"
-	CodeInternalError      = "INTERNAL_ERROR"
-	CodeInvalidCredentials = "INVALID_CREDENTIALS"
+	CodeInvalidRequest      = "INVALID_REQUEST"
+	CodeEmailAlreadyExists  = "EMAIL_ALREADY_EXISTS"
+	CodeInternalError       = "INTERNAL_ERROR"
+	CodeInvalidCredentials  = "INVALID_CREDENTIALS"
+	CodeInvalidRefreshToken = "INVALID_REFRESH_TOKEN"
 )
 
 func WriteError(

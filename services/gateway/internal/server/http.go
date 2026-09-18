@@ -23,6 +23,11 @@ func NewHTTPServer(
 		authHandler.Login,
 	)
 
+	mux.HandleFunc(
+		"POST /api/v1/auth/refresh",
+		authHandler.Refresh,
+	)
+
 	return &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),
 		Handler: mux,
