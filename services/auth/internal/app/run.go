@@ -8,9 +8,9 @@ import (
 	"github.com/vivek-344/diagon/services/auth/internal/server"
 )
 
-func (a *App) Run() error {
-	ctx, cancel := context.WithTimeout(
-		context.Background(),
+func (a *App) Run(ctx context.Context) error {
+	healthCtx, cancel := context.WithTimeout(
+		ctx,
 		2*time.Second,
 	)
 	defer cancel()
@@ -18,7 +18,7 @@ func (a *App) Run() error {
 	var schema string
 
 	if err := a.db.QueryRowContext(
-		ctx,
+		healthCtx,
 		"SELECT current_schema()",
 	).Scan(&schema); err != nil {
 		a.logger.Error(
@@ -47,14 +47,31 @@ func (a *App) Run() error {
 		return fmt.Errorf("app: create grpc server: %w", err)
 	}
 
-	a.logger.Info(
-		"auth service initialized",
-		"grpc_address", listener.Addr().String(),
-	)
+	serverErr := make(chan error, 1)
 
-	if err := grpcServer.Serve(listener); err != nil {
-		return fmt.Errorf("app: grpc serve: %w", err)
+	go func() {
+		a.logger.Info(
+			"auth grpc server listening",
+			"grpc_address", listener.Addr().String(),
+		)
+
+		serverErr <- grpcServer.Serve(listener)
+	}()
+
+	select {
+	case err := <-serverErr:
+		return fmt.Errorf(
+			"app: grpc serve: %w",
+			err,
+		)
+
+	case <-ctx.Done():
+		a.logger.Info(
+			"shutting down auth service",
+		)
+
+		grpcServer.GracefulStop()
+
+		return nil
 	}
-
-	return nil
 }

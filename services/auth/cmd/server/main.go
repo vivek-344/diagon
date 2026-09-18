@@ -1,8 +1,11 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/vivek-344/diagon/services/auth/internal/app"
 	"github.com/vivek-344/diagon/services/auth/internal/database"
@@ -32,7 +35,14 @@ func main() {
 
 	a := app.New(cfg, logger, db)
 
-	if err := a.Run(); err != nil {
+	ctx, stop := signal.NotifyContext(
+		context.Background(),
+		os.Interrupt,
+		syscall.SIGTERM,
+	)
+	defer stop()
+
+	if err := a.Run(ctx); err != nil {
 		logger.Error(
 			"auth service stopped",
 			"error", err,
