@@ -18,6 +18,11 @@ func NewHTTPServer(
 		authHandler.Register,
 	)
 
+	mux.HandleFunc(
+		"POST /api/v1/auth/login",
+		authHandler.Login,
+	)
+
 	return &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),
 		Handler: mux,

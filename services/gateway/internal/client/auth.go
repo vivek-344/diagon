@@ -53,3 +53,17 @@ func (c *AuthClient) Register(
 		},
 	)
 }
+
+func (c *AuthClient) Login(
+	ctx context.Context,
+	email string,
+	password string,
+) (*authv1.LoginResponse, error) {
+	return c.client.Login(
+		ctx,
+		&authv1.LoginRequest{
+			Email:    email,
+			Password: password,
+		},
+	)
+}

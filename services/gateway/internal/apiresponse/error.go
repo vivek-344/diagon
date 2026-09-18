@@ -19,6 +19,7 @@ const (
 	CodeInvalidRequest     = "INVALID_REQUEST"
 	CodeEmailAlreadyExists = "EMAIL_ALREADY_EXISTS"
 	CodeInternalError      = "INTERNAL_ERROR"
+	CodeInvalidCredentials = "INVALID_CREDENTIALS"
 )
 
 func WriteError(
