@@ -178,6 +178,162 @@ func (x *User) GetCreatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+type LoginRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LoginRequest) Reset() {
+	*x = LoginRequest{}
+	mi := &file_api_proto_auth_v1_auth_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LoginRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LoginRequest) ProtoMessage() {}
+
+func (x *LoginRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_auth_v1_auth_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LoginRequest.ProtoReflect.Descriptor instead.
+func (*LoginRequest) Descriptor() ([]byte, []int) {
+	return file_api_proto_auth_v1_auth_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *LoginRequest) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *LoginRequest) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+type LoginResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	User          *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	Tokens        *TokenPair             `protobuf:"bytes,2,opt,name=tokens,proto3" json:"tokens,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LoginResponse) Reset() {
+	*x = LoginResponse{}
+	mi := &file_api_proto_auth_v1_auth_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LoginResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LoginResponse) ProtoMessage() {}
+
+func (x *LoginResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_auth_v1_auth_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LoginResponse.ProtoReflect.Descriptor instead.
+func (*LoginResponse) Descriptor() ([]byte, []int) {
+	return file_api_proto_auth_v1_auth_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *LoginResponse) GetUser() *User {
+	if x != nil {
+		return x.User
+	}
+	return nil
+}
+
+func (x *LoginResponse) GetTokens() *TokenPair {
+	if x != nil {
+		return x.Tokens
+	}
+	return nil
+}
+
+type TokenPair struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	RefreshToken  string                 `protobuf:"bytes,2,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TokenPair) Reset() {
+	*x = TokenPair{}
+	mi := &file_api_proto_auth_v1_auth_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TokenPair) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TokenPair) ProtoMessage() {}
+
+func (x *TokenPair) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_auth_v1_auth_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TokenPair.ProtoReflect.Descriptor instead.
+func (*TokenPair) Descriptor() ([]byte, []int) {
+	return file_api_proto_auth_v1_auth_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *TokenPair) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+func (x *TokenPair) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
 var File_api_proto_auth_v1_auth_proto protoreflect.FileDescriptor
 
 const file_api_proto_auth_v1_auth_proto_rawDesc = "" +
@@ -192,9 +348,19 @@ const file_api_proto_auth_v1_auth_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x129\n" +
 	"\n" +
-	"created_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt2\\\n" +
+	"created_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"@\n" +
+	"\fLoginRequest\x12\x14\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"l\n" +
+	"\rLoginResponse\x12(\n" +
+	"\x04user\x18\x01 \x01(\v2\x14.diagon.auth.v1.UserR\x04user\x121\n" +
+	"\x06tokens\x18\x02 \x01(\v2\x19.diagon.auth.v1.TokenPairR\x06tokens\"S\n" +
+	"\tTokenPair\x12!\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12#\n" +
+	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken2\xa2\x01\n" +
 	"\vAuthService\x12M\n" +
-	"\bRegister\x12\x1f.diagon.auth.v1.RegisterRequest\x1a .diagon.auth.v1.RegisterResponseB0Z.github.com/vivek-344/diagon/gen/auth/v1;authv1b\x06proto3"
+	"\bRegister\x12\x1f.diagon.auth.v1.RegisterRequest\x1a .diagon.auth.v1.RegisterResponse\x12D\n" +
+	"\x05Login\x12\x1c.diagon.auth.v1.LoginRequest\x1a\x1d.diagon.auth.v1.LoginResponseB0Z.github.com/vivek-344/diagon/gen/auth/v1;authv1b\x06proto3"
 
 var (
 	file_api_proto_auth_v1_auth_proto_rawDescOnce sync.Once
@@ -208,23 +374,30 @@ func file_api_proto_auth_v1_auth_proto_rawDescGZIP() []byte {
 	return file_api_proto_auth_v1_auth_proto_rawDescData
 }
 
-var file_api_proto_auth_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_api_proto_auth_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_api_proto_auth_v1_auth_proto_goTypes = []any{
 	(*RegisterRequest)(nil),       // 0: diagon.auth.v1.RegisterRequest
 	(*RegisterResponse)(nil),      // 1: diagon.auth.v1.RegisterResponse
 	(*User)(nil),                  // 2: diagon.auth.v1.User
-	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
+	(*LoginRequest)(nil),          // 3: diagon.auth.v1.LoginRequest
+	(*LoginResponse)(nil),         // 4: diagon.auth.v1.LoginResponse
+	(*TokenPair)(nil),             // 5: diagon.auth.v1.TokenPair
+	(*timestamppb.Timestamp)(nil), // 6: google.protobuf.Timestamp
 }
 var file_api_proto_auth_v1_auth_proto_depIdxs = []int32{
 	2, // 0: diagon.auth.v1.RegisterResponse.user:type_name -> diagon.auth.v1.User
-	3, // 1: diagon.auth.v1.User.created_at:type_name -> google.protobuf.Timestamp
-	0, // 2: diagon.auth.v1.AuthService.Register:input_type -> diagon.auth.v1.RegisterRequest
-	1, // 3: diagon.auth.v1.AuthService.Register:output_type -> diagon.auth.v1.RegisterResponse
-	3, // [3:4] is the sub-list for method output_type
-	2, // [2:3] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	6, // 1: diagon.auth.v1.User.created_at:type_name -> google.protobuf.Timestamp
+	2, // 2: diagon.auth.v1.LoginResponse.user:type_name -> diagon.auth.v1.User
+	5, // 3: diagon.auth.v1.LoginResponse.tokens:type_name -> diagon.auth.v1.TokenPair
+	0, // 4: diagon.auth.v1.AuthService.Register:input_type -> diagon.auth.v1.RegisterRequest
+	3, // 5: diagon.auth.v1.AuthService.Login:input_type -> diagon.auth.v1.LoginRequest
+	1, // 6: diagon.auth.v1.AuthService.Register:output_type -> diagon.auth.v1.RegisterResponse
+	4, // 7: diagon.auth.v1.AuthService.Login:output_type -> diagon.auth.v1.LoginResponse
+	6, // [6:8] is the sub-list for method output_type
+	4, // [4:6] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_api_proto_auth_v1_auth_proto_init() }
@@ -238,7 +411,7 @@ func file_api_proto_auth_v1_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_proto_auth_v1_auth_proto_rawDesc), len(file_api_proto_auth_v1_auth_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

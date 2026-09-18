@@ -70,3 +70,41 @@ func (h *AuthHandler) Register(
 		},
 	}, nil
 }
+
+func (h *AuthHandler) Login(
+	ctx context.Context,
+	req *authv1.LoginRequest,
+) (*authv1.LoginResponse, error) {
+	user, tokens, err := h.authService.Login(
+		ctx,
+		req.GetEmail(),
+		req.GetPassword(),
+	)
+	if err != nil {
+		switch {
+		case errors.Is(err, service.ErrInvalidCredentials):
+			return nil, status.Error(
+				codes.Unauthenticated,
+				err.Error(),
+			)
+
+		default:
+			return nil, status.Error(
+				codes.Internal,
+				"failed to authenticate user",
+			)
+		}
+	}
+
+	return &authv1.LoginResponse{
+		User: &authv1.User{
+			Id:        user.ID,
+			Email:     user.Email,
+			CreatedAt: timestamppb.New(user.CreatedAt),
+		},
+		Tokens: &authv1.TokenPair{
+			AccessToken:  tokens.AccessToken,
+			RefreshToken: tokens.RefreshToken,
+		},
+	}, nil
+}

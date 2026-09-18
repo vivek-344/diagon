@@ -12,12 +12,17 @@ import (
 )
 
 type AuthService struct {
-	users *repository.UserRepository
+	users  *repository.UserRepository
+	tokens *security.TokenManager
 }
 
-func NewAuthService(users *repository.UserRepository) *AuthService {
+func NewAuthService(
+	users *repository.UserRepository,
+	tokens *security.TokenManager,
+) *AuthService {
 	return &AuthService{
-		users: users,
+		users:  users,
+		tokens: tokens,
 	}
 }
 
@@ -55,4 +60,62 @@ func (s *AuthService) Register(
 	}
 
 	return user, nil
+}
+
+func (s *AuthService) Login(
+	ctx context.Context,
+	email string,
+	password string,
+) (*domain.User, *security.TokenPair, error) {
+	email = strings.ToLower(strings.TrimSpace(email))
+
+	if email == "" || !strings.Contains(email, "@") {
+		return nil, nil, ErrInvalidCredentials
+	}
+
+	if password == "" {
+		return nil, nil, ErrInvalidCredentials
+	}
+
+	user, err := s.users.FindByEmail(
+		ctx,
+		email,
+	)
+	if err != nil {
+		if errors.Is(err, repository.ErrUserNotFound) {
+			return nil, nil, ErrInvalidCredentials
+		}
+
+		return nil, nil, fmt.Errorf(
+			"service: find user: %w",
+			err,
+		)
+	}
+
+	ok, err := security.VerifyPassword(
+		password,
+		user.PasswordHash,
+	)
+	if err != nil {
+		return nil, nil, fmt.Errorf(
+			"service: verify password: %w",
+			err,
+		)
+	}
+
+	if !ok {
+		return nil, nil, ErrInvalidCredentials
+	}
+
+	tokens, err := s.tokens.GenerateTokenPair(
+		user.ID,
+	)
+	if err != nil {
+		return nil, nil, fmt.Errorf(
+			"service: generate tokens: %w",
+			err,
+		)
+	}
+
+	return user, tokens, nil
 }
