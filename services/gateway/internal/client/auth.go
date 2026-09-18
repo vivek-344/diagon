@@ -79,3 +79,15 @@ func (c *AuthClient) Refresh(
 		},
 	)
 }
+
+func (c *AuthClient) ValidateAccessToken(
+	ctx context.Context,
+	accessToken string,
+) (*authv1.ValidateAccessTokenResponse, error) {
+	return c.client.ValidateAccessToken(
+		ctx,
+		&authv1.ValidateAccessTokenRequest{
+			AccessToken: accessToken,
+		},
+	)
+}

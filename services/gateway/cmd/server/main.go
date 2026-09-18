@@ -12,6 +12,7 @@ import (
 	"github.com/vivek-344/diagon/services/gateway/internal/client"
 	"github.com/vivek-344/diagon/services/gateway/internal/config"
 	"github.com/vivek-344/diagon/services/gateway/internal/handler"
+	"github.com/vivek-344/diagon/services/gateway/internal/middleware"
 	"github.com/vivek-344/diagon/services/gateway/internal/server"
 )
 
@@ -47,6 +48,10 @@ func main() {
 	}
 	defer authClient.Close()
 
+	authMiddleware := middleware.NewAuthMiddleware(
+		authClient,
+	)
+
 	authHandler := handler.NewAuthHandler(
 		authClient,
 	)
@@ -54,6 +59,7 @@ func main() {
 	httpServer := server.NewHTTPServer(
 		cfg.App.HTTPPort,
 		authHandler,
+		authMiddleware,
 	)
 
 	ctx, stop := signal.NotifyContext(
