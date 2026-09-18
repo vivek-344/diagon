@@ -32,5 +32,11 @@ func main() {
 
 	a := app.New(cfg, logger, db)
 
-	a.Run()
+	if err := a.Run(); err != nil {
+		logger.Error(
+			"auth service stopped",
+			"error", err,
+		)
+		os.Exit(1)
+	}
 }

@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"time"
+
+	"github.com/vivek-344/diagon/services/auth/internal/server"
 )
 
-func (a *App) Run() {
+func (a *App) Run() error {
 	ctx, cancel := context.WithTimeout(
 		context.Background(),
 		2*time.Second,
@@ -23,12 +25,11 @@ func (a *App) Run() {
 			"database health check failed",
 			"error", err,
 		)
-		return
+		return err
 	}
 
 	a.logger.Info(
-		"auth service initialized",
-		"grpc_port", a.cfg.App.GRPCPort,
+		"database health check passed",
 		"database_address", fmt.Sprintf(
 			"%s:%d/%s",
 			a.cfg.DB.Host,
@@ -37,4 +38,23 @@ func (a *App) Run() {
 		),
 		"schema", schema,
 	)
+
+	grpcServer, listener, err := server.NewGRPCServer(
+		a.cfg.App,
+		a.authHandler,
+	)
+	if err != nil {
+		return fmt.Errorf("app: create grpc server: %w", err)
+	}
+
+	a.logger.Info(
+		"auth service initialized",
+		"grpc_address", listener.Addr().String(),
+	)
+
+	if err := grpcServer.Serve(listener); err != nil {
+		return fmt.Errorf("app: grpc serve: %w", err)
+	}
+
+	return nil
 }

@@ -5,6 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/vivek-344/diagon/services/auth/internal/config"
+	"github.com/vivek-344/diagon/services/auth/internal/handler"
 	"github.com/vivek-344/diagon/services/auth/internal/repository"
 	"github.com/vivek-344/diagon/services/auth/internal/service"
 )
@@ -16,6 +17,7 @@ type App struct {
 
 	userRepository *repository.UserRepository
 	authService    *service.AuthService
+	authHandler    *handler.AuthHandler
 }
 
 func New(
@@ -25,11 +27,21 @@ func New(
 ) *App {
 	userRepository := repository.NewUserRepository(db)
 
+	authService := service.NewAuthService(
+		userRepository,
+	)
+
+	authHandler := handler.NewAuthHandler(
+		authService,
+	)
+
 	return &App{
-		cfg:            cfg,
-		logger:         logger,
-		db:             db,
+		cfg:    cfg,
+		logger: logger,
+		db:     db,
+
 		userRepository: userRepository,
-		authService:    service.NewAuthService(userRepository),
+		authService:    authService,
+		authHandler:    authHandler,
 	}
 }
