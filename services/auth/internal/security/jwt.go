@@ -84,3 +84,68 @@ func (m *TokenManager) generateToken(
 
 	return token.SignedString(m.signingKey)
 }
+
+func (m *TokenManager) parseToken(
+	tokenString string,
+	expectedType string,
+) (string, error) {
+	token, err := jwt.Parse(
+		tokenString,
+		func(token *jwt.Token) (any, error) {
+			if token.Method != jwt.SigningMethodHS256 {
+				return nil, fmt.Errorf(
+					"security: unexpected signing method",
+				)
+			}
+
+			return m.signingKey, nil
+		},
+	)
+	if err != nil {
+		return "", fmt.Errorf(
+			"security: parse token: %w",
+			err,
+		)
+	}
+
+	if !token.Valid {
+		return "", fmt.Errorf(
+			"security: invalid token",
+		)
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", fmt.Errorf(
+			"security: invalid token claims",
+		)
+	}
+
+	tokenType, ok := claims["type"].(string)
+	if !ok || tokenType != expectedType {
+		return "", fmt.Errorf(
+			"security: invalid token type",
+		)
+	}
+
+	userID, ok := claims["sub"].(string)
+	if !ok || userID == "" {
+		return "", fmt.Errorf(
+			"security: token missing subject",
+		)
+	}
+
+	return userID, nil
+}
+
+func (m *TokenManager) ValidateAccessToken(
+	tokenString string,
+) (string, error) {
+	return m.parseToken(tokenString, "access")
+}
+
+func (m *TokenManager) ValidateRefreshToken(
+	tokenString string,
+) (string, error) {
+	return m.parseToken(tokenString, "refresh")
+}

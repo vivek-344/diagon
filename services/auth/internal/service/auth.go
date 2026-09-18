@@ -119,3 +119,37 @@ func (s *AuthService) Login(
 
 	return user, tokens, nil
 }
+
+func (s *AuthService) Refresh(
+	refreshToken string,
+) (*security.TokenPair, error) {
+	userID, err := s.tokens.ValidateRefreshToken(
+		refreshToken,
+	)
+	if err != nil {
+		return nil, ErrInvalidRefreshToken
+	}
+
+	tokens, err := s.tokens.GenerateTokenPair(userID)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"service: generate refreshed tokens: %w",
+			err,
+		)
+	}
+
+	return tokens, nil
+}
+
+func (s *AuthService) ValidateAccessToken(
+	accessToken string,
+) (string, error) {
+	userID, err := s.tokens.ValidateAccessToken(
+		accessToken,
+	)
+	if err != nil {
+		return "", ErrInvalidAccessToken
+	}
+
+	return userID, nil
+}

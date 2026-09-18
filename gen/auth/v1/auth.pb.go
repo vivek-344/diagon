@@ -7,12 +7,13 @@
 package authv1
 
 import (
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -334,6 +335,182 @@ func (x *TokenPair) GetRefreshToken() string {
 	return ""
 }
 
+type RefreshRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RefreshToken  string                 `protobuf:"bytes,1,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RefreshRequest) Reset() {
+	*x = RefreshRequest{}
+	mi := &file_api_proto_auth_v1_auth_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RefreshRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RefreshRequest) ProtoMessage() {}
+
+func (x *RefreshRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_auth_v1_auth_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RefreshRequest.ProtoReflect.Descriptor instead.
+func (*RefreshRequest) Descriptor() ([]byte, []int) {
+	return file_api_proto_auth_v1_auth_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *RefreshRequest) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
+type RefreshResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Tokens        *TokenPair             `protobuf:"bytes,1,opt,name=tokens,proto3" json:"tokens,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RefreshResponse) Reset() {
+	*x = RefreshResponse{}
+	mi := &file_api_proto_auth_v1_auth_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RefreshResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RefreshResponse) ProtoMessage() {}
+
+func (x *RefreshResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_auth_v1_auth_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RefreshResponse.ProtoReflect.Descriptor instead.
+func (*RefreshResponse) Descriptor() ([]byte, []int) {
+	return file_api_proto_auth_v1_auth_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *RefreshResponse) GetTokens() *TokenPair {
+	if x != nil {
+		return x.Tokens
+	}
+	return nil
+}
+
+type ValidateAccessTokenRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ValidateAccessTokenRequest) Reset() {
+	*x = ValidateAccessTokenRequest{}
+	mi := &file_api_proto_auth_v1_auth_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ValidateAccessTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ValidateAccessTokenRequest) ProtoMessage() {}
+
+func (x *ValidateAccessTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_auth_v1_auth_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ValidateAccessTokenRequest.ProtoReflect.Descriptor instead.
+func (*ValidateAccessTokenRequest) Descriptor() ([]byte, []int) {
+	return file_api_proto_auth_v1_auth_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ValidateAccessTokenRequest) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+type ValidateAccessTokenResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ValidateAccessTokenResponse) Reset() {
+	*x = ValidateAccessTokenResponse{}
+	mi := &file_api_proto_auth_v1_auth_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ValidateAccessTokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ValidateAccessTokenResponse) ProtoMessage() {}
+
+func (x *ValidateAccessTokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_auth_v1_auth_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ValidateAccessTokenResponse.ProtoReflect.Descriptor instead.
+func (*ValidateAccessTokenResponse) Descriptor() ([]byte, []int) {
+	return file_api_proto_auth_v1_auth_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ValidateAccessTokenResponse) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
 var File_api_proto_auth_v1_auth_proto protoreflect.FileDescriptor
 
 const file_api_proto_auth_v1_auth_proto_rawDesc = "" +
@@ -357,10 +534,20 @@ const file_api_proto_auth_v1_auth_proto_rawDesc = "" +
 	"\x06tokens\x18\x02 \x01(\v2\x19.diagon.auth.v1.TokenPairR\x06tokens\"S\n" +
 	"\tTokenPair\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12#\n" +
-	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken2\xa2\x01\n" +
+	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\"5\n" +
+	"\x0eRefreshRequest\x12#\n" +
+	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"D\n" +
+	"\x0fRefreshResponse\x121\n" +
+	"\x06tokens\x18\x01 \x01(\v2\x19.diagon.auth.v1.TokenPairR\x06tokens\"?\n" +
+	"\x1aValidateAccessTokenRequest\x12!\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\"6\n" +
+	"\x1bValidateAccessTokenResponse\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId2\xde\x02\n" +
 	"\vAuthService\x12M\n" +
 	"\bRegister\x12\x1f.diagon.auth.v1.RegisterRequest\x1a .diagon.auth.v1.RegisterResponse\x12D\n" +
-	"\x05Login\x12\x1c.diagon.auth.v1.LoginRequest\x1a\x1d.diagon.auth.v1.LoginResponseB0Z.github.com/vivek-344/diagon/gen/auth/v1;authv1b\x06proto3"
+	"\x05Login\x12\x1c.diagon.auth.v1.LoginRequest\x1a\x1d.diagon.auth.v1.LoginResponse\x12J\n" +
+	"\aRefresh\x12\x1e.diagon.auth.v1.RefreshRequest\x1a\x1f.diagon.auth.v1.RefreshResponse\x12n\n" +
+	"\x13ValidateAccessToken\x12*.diagon.auth.v1.ValidateAccessTokenRequest\x1a+.diagon.auth.v1.ValidateAccessTokenResponseB0Z.github.com/vivek-344/diagon/gen/auth/v1;authv1b\x06proto3"
 
 var (
 	file_api_proto_auth_v1_auth_proto_rawDescOnce sync.Once
@@ -374,30 +561,39 @@ func file_api_proto_auth_v1_auth_proto_rawDescGZIP() []byte {
 	return file_api_proto_auth_v1_auth_proto_rawDescData
 }
 
-var file_api_proto_auth_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_api_proto_auth_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_api_proto_auth_v1_auth_proto_goTypes = []any{
-	(*RegisterRequest)(nil),       // 0: diagon.auth.v1.RegisterRequest
-	(*RegisterResponse)(nil),      // 1: diagon.auth.v1.RegisterResponse
-	(*User)(nil),                  // 2: diagon.auth.v1.User
-	(*LoginRequest)(nil),          // 3: diagon.auth.v1.LoginRequest
-	(*LoginResponse)(nil),         // 4: diagon.auth.v1.LoginResponse
-	(*TokenPair)(nil),             // 5: diagon.auth.v1.TokenPair
-	(*timestamppb.Timestamp)(nil), // 6: google.protobuf.Timestamp
+	(*RegisterRequest)(nil),             // 0: diagon.auth.v1.RegisterRequest
+	(*RegisterResponse)(nil),            // 1: diagon.auth.v1.RegisterResponse
+	(*User)(nil),                        // 2: diagon.auth.v1.User
+	(*LoginRequest)(nil),                // 3: diagon.auth.v1.LoginRequest
+	(*LoginResponse)(nil),               // 4: diagon.auth.v1.LoginResponse
+	(*TokenPair)(nil),                   // 5: diagon.auth.v1.TokenPair
+	(*RefreshRequest)(nil),              // 6: diagon.auth.v1.RefreshRequest
+	(*RefreshResponse)(nil),             // 7: diagon.auth.v1.RefreshResponse
+	(*ValidateAccessTokenRequest)(nil),  // 8: diagon.auth.v1.ValidateAccessTokenRequest
+	(*ValidateAccessTokenResponse)(nil), // 9: diagon.auth.v1.ValidateAccessTokenResponse
+	(*timestamppb.Timestamp)(nil),       // 10: google.protobuf.Timestamp
 }
 var file_api_proto_auth_v1_auth_proto_depIdxs = []int32{
-	2, // 0: diagon.auth.v1.RegisterResponse.user:type_name -> diagon.auth.v1.User
-	6, // 1: diagon.auth.v1.User.created_at:type_name -> google.protobuf.Timestamp
-	2, // 2: diagon.auth.v1.LoginResponse.user:type_name -> diagon.auth.v1.User
-	5, // 3: diagon.auth.v1.LoginResponse.tokens:type_name -> diagon.auth.v1.TokenPair
-	0, // 4: diagon.auth.v1.AuthService.Register:input_type -> diagon.auth.v1.RegisterRequest
-	3, // 5: diagon.auth.v1.AuthService.Login:input_type -> diagon.auth.v1.LoginRequest
-	1, // 6: diagon.auth.v1.AuthService.Register:output_type -> diagon.auth.v1.RegisterResponse
-	4, // 7: diagon.auth.v1.AuthService.Login:output_type -> diagon.auth.v1.LoginResponse
-	6, // [6:8] is the sub-list for method output_type
-	4, // [4:6] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	2,  // 0: diagon.auth.v1.RegisterResponse.user:type_name -> diagon.auth.v1.User
+	10, // 1: diagon.auth.v1.User.created_at:type_name -> google.protobuf.Timestamp
+	2,  // 2: diagon.auth.v1.LoginResponse.user:type_name -> diagon.auth.v1.User
+	5,  // 3: diagon.auth.v1.LoginResponse.tokens:type_name -> diagon.auth.v1.TokenPair
+	5,  // 4: diagon.auth.v1.RefreshResponse.tokens:type_name -> diagon.auth.v1.TokenPair
+	0,  // 5: diagon.auth.v1.AuthService.Register:input_type -> diagon.auth.v1.RegisterRequest
+	3,  // 6: diagon.auth.v1.AuthService.Login:input_type -> diagon.auth.v1.LoginRequest
+	6,  // 7: diagon.auth.v1.AuthService.Refresh:input_type -> diagon.auth.v1.RefreshRequest
+	8,  // 8: diagon.auth.v1.AuthService.ValidateAccessToken:input_type -> diagon.auth.v1.ValidateAccessTokenRequest
+	1,  // 9: diagon.auth.v1.AuthService.Register:output_type -> diagon.auth.v1.RegisterResponse
+	4,  // 10: diagon.auth.v1.AuthService.Login:output_type -> diagon.auth.v1.LoginResponse
+	7,  // 11: diagon.auth.v1.AuthService.Refresh:output_type -> diagon.auth.v1.RefreshResponse
+	9,  // 12: diagon.auth.v1.AuthService.ValidateAccessToken:output_type -> diagon.auth.v1.ValidateAccessTokenResponse
+	9,  // [9:13] is the sub-list for method output_type
+	5,  // [5:9] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_api_proto_auth_v1_auth_proto_init() }
@@ -411,7 +607,7 @@ func file_api_proto_auth_v1_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_proto_auth_v1_auth_proto_rawDesc), len(file_api_proto_auth_v1_auth_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

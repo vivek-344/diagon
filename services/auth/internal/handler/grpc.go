@@ -108,3 +108,58 @@ func (h *AuthHandler) Login(
 		},
 	}, nil
 }
+
+func (h *AuthHandler) Refresh(
+	ctx context.Context,
+	req *authv1.RefreshRequest,
+) (*authv1.RefreshResponse, error) {
+	tokens, err := h.authService.Refresh(
+		req.GetRefreshToken(),
+	)
+	if err != nil {
+		if errors.Is(err, service.ErrInvalidRefreshToken) {
+			return nil, status.Error(
+				codes.Unauthenticated,
+				err.Error(),
+			)
+		}
+
+		return nil, status.Error(
+			codes.Internal,
+			"failed to refresh token",
+		)
+	}
+
+	return &authv1.RefreshResponse{
+		Tokens: &authv1.TokenPair{
+			AccessToken:  tokens.AccessToken,
+			RefreshToken: tokens.RefreshToken,
+		},
+	}, nil
+}
+
+func (h *AuthHandler) ValidateAccessToken(
+	ctx context.Context,
+	req *authv1.ValidateAccessTokenRequest,
+) (*authv1.ValidateAccessTokenResponse, error) {
+	userID, err := h.authService.ValidateAccessToken(
+		req.GetAccessToken(),
+	)
+	if err != nil {
+		if errors.Is(err, service.ErrInvalidAccessToken) {
+			return nil, status.Error(
+				codes.Unauthenticated,
+				err.Error(),
+			)
+		}
+
+		return nil, status.Error(
+			codes.Internal,
+			"failed to validate access token",
+		)
+	}
+
+	return &authv1.ValidateAccessTokenResponse{
+		UserId: userID,
+	}, nil
+}
