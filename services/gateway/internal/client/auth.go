@@ -91,3 +91,15 @@ func (c *AuthClient) ValidateAccessToken(
 		},
 	)
 }
+
+func (c *AuthClient) GetUser(
+	ctx context.Context,
+	userID string,
+) (*authv1.GetUserResponse, error) {
+	return c.client.GetUser(
+		ctx,
+		&authv1.GetUserRequest{
+			UserId: userID,
+		},
+	)
+}

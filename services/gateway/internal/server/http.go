@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/vivek-344/diagon/services/gateway/internal/apiresponse"
 	"github.com/vivek-344/diagon/services/gateway/internal/handler"
 	"github.com/vivek-344/diagon/services/gateway/internal/middleware"
 )
@@ -36,27 +35,7 @@ func NewHTTPServer(
 	mux.Handle(
 		"GET /api/v1/auth/me",
 		authMiddleware.RequireAuth(
-			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				userID, ok := middleware.UserID(r.Context())
-				if !ok {
-					apiresponse.WriteError(
-						w,
-						http.StatusInternalServerError,
-						apiresponse.CodeInternalError,
-						"An unexpected error occurred.",
-						nil,
-					)
-					return
-				}
-
-				apiresponse.Write(
-					w,
-					http.StatusOK,
-					map[string]string{
-						"user_id": userID,
-					},
-				)
-			}),
+			http.HandlerFunc(authHandler.GetCurrentUser),
 		),
 	)
 

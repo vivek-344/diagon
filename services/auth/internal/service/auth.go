@@ -153,3 +153,26 @@ func (s *AuthService) ValidateAccessToken(
 
 	return userID, nil
 }
+
+func (s *AuthService) GetUser(
+	ctx context.Context,
+	userID string,
+) (*domain.User, error) {
+	if strings.TrimSpace(userID) == "" {
+		return nil, ErrUserNotFound
+	}
+
+	user, err := s.users.FindByID(ctx, userID)
+	if err != nil {
+		if errors.Is(err, repository.ErrUserNotFound) {
+			return nil, ErrUserNotFound
+		}
+
+		return nil, fmt.Errorf(
+			"service: find user by id: %w",
+			err,
+		)
+	}
+
+	return user, nil
+}

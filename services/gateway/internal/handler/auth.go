@@ -7,6 +7,7 @@ import (
 
 	"github.com/vivek-344/diagon/services/gateway/internal/apiresponse"
 	"github.com/vivek-344/diagon/services/gateway/internal/client"
+	"github.com/vivek-344/diagon/services/gateway/internal/middleware"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -64,6 +65,12 @@ type refreshRequest struct {
 type refreshResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
+}
+
+type meResponse struct {
+	ID        string `json:"id"`
+	Email     string `json:"email"`
+	CreatedAt string `json:"created_at"`
 }
 
 func (h *AuthHandler) Register(
@@ -364,5 +371,75 @@ func (h *AuthHandler) Refresh(
 		w,
 		http.StatusOK,
 		result,
+	)
+}
+
+func (h *AuthHandler) GetCurrentUser(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	userID, ok := middleware.UserID(r.Context())
+	if !ok {
+		apiresponse.WriteError(
+			w,
+			http.StatusInternalServerError,
+			apiresponse.CodeInternalError,
+			"An unexpected error occurred.",
+			nil,
+		)
+		return
+	}
+
+	response, err := h.authClient.GetUser(
+		r.Context(),
+		userID,
+	)
+	if err != nil {
+		switch status.Code(err) {
+		case codes.NotFound:
+			// The token is valid, but its user no longer exists.
+			apiresponse.WriteError(
+				w,
+				http.StatusUnauthorized,
+				apiresponse.CodeInvalidAccessToken,
+				"Invalid access token.",
+				nil,
+			)
+
+		default:
+			apiresponse.WriteError(
+				w,
+				http.StatusInternalServerError,
+				apiresponse.CodeInternalError,
+				"An unexpected error occurred.",
+				nil,
+			)
+		}
+
+		return
+	}
+
+	user := response.GetUser()
+	if user == nil {
+		apiresponse.WriteError(
+			w,
+			http.StatusInternalServerError,
+			apiresponse.CodeInternalError,
+			"An unexpected error occurred.",
+			nil,
+		)
+		return
+	}
+
+	apiresponse.Write(
+		w,
+		http.StatusOK,
+		meResponse{
+			ID:    user.GetId(),
+			Email: user.GetEmail(),
+			CreatedAt: user.GetCreatedAt().
+				AsTime().
+				Format("2006-01-02T15:04:05Z07:00"),
+		},
 	)
 }

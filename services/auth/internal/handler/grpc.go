@@ -163,3 +163,36 @@ func (h *AuthHandler) ValidateAccessToken(
 		UserId: userID,
 	}, nil
 }
+
+func (h *AuthHandler) GetUser(
+	ctx context.Context,
+	req *authv1.GetUserRequest,
+) (*authv1.GetUserResponse, error) {
+	user, err := h.authService.GetUser(
+		ctx,
+		req.GetUserId(),
+	)
+	if err != nil {
+		switch {
+		case errors.Is(err, service.ErrUserNotFound):
+			return nil, status.Error(
+				codes.NotFound,
+				"user not found",
+			)
+
+		default:
+			return nil, status.Error(
+				codes.Internal,
+				"failed to get user",
+			)
+		}
+	}
+
+	return &authv1.GetUserResponse{
+		User: &authv1.User{
+			Id:        user.ID,
+			Email:     user.Email,
+			CreatedAt: timestamppb.New(user.CreatedAt),
+		},
+	}, nil
+}
