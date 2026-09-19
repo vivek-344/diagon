@@ -12,13 +12,13 @@ import (
 )
 
 type AuthService struct {
-	users  *repository.UserRepository
-	tokens *security.TokenManager
+	users  UserRepository
+	tokens TokenManager
 }
 
 func NewAuthService(
-	users *repository.UserRepository,
-	tokens *security.TokenManager,
+	users UserRepository,
+	tokens TokenManager,
 ) *AuthService {
 	return &AuthService{
 		users:  users,

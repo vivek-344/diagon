@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/vivek-344/diagon/services/gateway/internal/apiresponse"
-	"github.com/vivek-344/diagon/services/gateway/internal/client"
 	"github.com/vivek-344/diagon/services/gateway/internal/middleware"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -15,62 +14,15 @@ import (
 const maxRequestBodySize = 1 << 20
 
 type AuthHandler struct {
-	authClient *client.AuthClient
+	authClient AuthClient
 }
 
 func NewAuthHandler(
-	authClient *client.AuthClient,
+	authClient AuthClient,
 ) *AuthHandler {
 	return &AuthHandler{
 		authClient: authClient,
 	}
-}
-
-type registerRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type registerResponse struct {
-	ID        string `json:"id"`
-	Email     string `json:"email"`
-	CreatedAt string `json:"created_at"`
-}
-
-type loginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type loginResponse struct {
-	User   loginUserResponse `json:"user"`
-	Tokens tokenResponse     `json:"tokens"`
-}
-
-type loginUserResponse struct {
-	ID        string `json:"id"`
-	Email     string `json:"email"`
-	CreatedAt string `json:"created_at"`
-}
-
-type tokenResponse struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
-}
-
-type refreshRequest struct {
-	RefreshToken string `json:"refresh_token"`
-}
-
-type refreshResponse struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
-}
-
-type meResponse struct {
-	ID        string `json:"id"`
-	Email     string `json:"email"`
-	CreatedAt string `json:"created_at"`
 }
 
 func (h *AuthHandler) Register(

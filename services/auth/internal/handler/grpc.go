@@ -14,11 +14,11 @@ import (
 type AuthHandler struct {
 	authv1.UnimplementedAuthServiceServer
 
-	authService *service.AuthService
+	authService AuthService
 }
 
 func NewAuthHandler(
-	authService *service.AuthService,
+	authService AuthService,
 ) *AuthHandler {
 	return &AuthHandler{
 		authService: authService,

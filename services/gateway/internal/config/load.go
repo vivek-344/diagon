@@ -22,7 +22,7 @@ func Load() (*Config, error) {
 
 	if err := v.ReadInConfig(); err != nil {
 		var notFoundErr viper.ConfigFileNotFoundError
-		if !errors.As(err, &notFoundErr) {
+		if !errors.As(err, &notFoundErr) && !os.IsNotExist(err) {
 			return nil, fmt.Errorf(
 				"config: read config: %w",
 				err,

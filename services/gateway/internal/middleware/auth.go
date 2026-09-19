@@ -5,16 +5,17 @@ import (
 	"strings"
 
 	"github.com/vivek-344/diagon/services/gateway/internal/apiresponse"
-	"github.com/vivek-344/diagon/services/gateway/internal/client"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 type AuthMiddleware struct {
-	authClient *client.AuthClient
+	authClient AuthClient
 }
 
-func NewAuthMiddleware(authClient *client.AuthClient) *AuthMiddleware {
+func NewAuthMiddleware(
+	authClient AuthClient,
+) *AuthMiddleware {
 	return &AuthMiddleware{
 		authClient: authClient,
 	}
@@ -89,7 +90,7 @@ func (m *AuthMiddleware) RequireAuth(
 			return
 		}
 
-		ctx := withUserID(r.Context(), response.GetUserId())
+		ctx := WithUserID(r.Context(), response.GetUserId())
 
 		next.ServeHTTP(
 			w,
